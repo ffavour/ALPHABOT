@@ -40,8 +40,6 @@ class ClientThread(threading.Thread):
         self.bottino = bottino
 
     def run(self):
-        dizComandiBase = {"f": self.bottino.forward(), "b": self.bottino.backward(), "r": self.bottino.right(),
-                          "l": self.bottino.forward()}
         while True:
             self.bottino.get_sensors()
             data = self.conn.recv(4096)
@@ -49,90 +47,132 @@ class ClientThread(threading.Thread):
 
             dataStr = data.decode()
 
-            comand = dataStr.split(SEPARATOR)
-            comando = comand[0]
-            duration = int(comand[1])
-
-            # prendo lista di comandi composti
+            # prendo lista di scorciatoie da db
             con = sqlite3.connect("database.db")
             cur = con.cursor()
-            res = cur.execute(f"SELECT Mov_seq FROM Movements WHERE Shortcut = '{dataStr}'")
-            moveSeq = res.fetchall()
-            print(moveSeq, type(moveSeq))
+            res = cur.execute(f"SELECT Shortcut FROM Movements")
+            Shortcut = res.fetchall()
             con.close()
 
-            if moveSeq:
-                listaMoveSeq = str(moveSeq).split(";")
-                listaMovimenti = []
+            listaShortcut = []
+            for i in range(len(Shortcut)):
+                listaShortcut.append(Shortcut[i][0])
 
-                for elemento in listaMoveSeq:
-                    a = elemento.replace("[('", "").replace("',)]", "")
-                    print(a)
-                    listaMovimenti.append(a)
-                print(listaMovimenti)
-
-                for elemento in listaMovimenti:
-                    print(dizComandiBase[elemento[0].lower()], elemento[1:])
-
+            print("fuori if")
+            print(str(dataStr[0]).upper())
+            if str(dataStr[0]).upper() in listaShortcut:
+                print("dentro if")
+                comandiComposti(dataStr[0].upper(), self.bottino, self.conn)
+                print("dopo funz")
 
             else:
-                print("cueri vuota")
+                comand = dataStr.split(SEPARATOR)
+                comando = comand[0]
+                duration = int(comand[1])
 
-            if comando == "-1":
-                print("fine")
-                self.conn.sendall("-1".encode())
-                break
+                if comando == "-1":
+                    print("fine")
+                    self.conn.sendall("-1".encode())
+                    break
 
-            elif duration <= 0:
-                self.conn.sendall("error".encode())
-
-            else:
-
-                if comando.lower() == "f":
-                    self.bottino.forward()
-                    time.sleep(duration)
-                    self.bottino.stop()
-
-                    self.conn.sendall("ok".encode())
-
-                elif comando.lower() == "b":
-                    self.bottino.backward()
-                    time.sleep(duration)
-                    self.bottino.stop()
-
-                    self.conn.sendall("ok".encode())
-
-                elif comando.lower() == "l":
-                    self.bottino.left()
-                    time.sleep(duration)
-                    self.bottino.stop()
-
-                    self.conn.sendall("ok".encode())
-
-                elif comando.lower() == "r":
-                    self.bottino.right()
-                    time.sleep(duration)
-                    self.bottino.stop()
-
-                    self.conn.sendall("ok".encode())
+                elif duration <= 0:
+                    self.conn.sendall("error".encode())
 
                 else:
-                    self.conn.sendall("error".encode())
+
+                    if comando.lower() == "f":
+                        self.bottino.forward()
+                        time.sleep(duration)
+                        self.bottino.stop()
+
+                        self.conn.sendall("ok".encode())
+
+                    elif comando.lower() == "b":
+                        self.bottino.backward()
+                        time.sleep(duration)
+                        self.bottino.stop()
+
+                        self.conn.sendall("ok".encode())
+
+                    elif comando.lower() == "l":
+                        self.bottino.left()
+                        time.sleep(duration)
+                        self.bottino.stop()
+
+                        self.conn.sendall("ok".encode())
+
+                    elif comando.lower() == "r":
+                        self.bottino.right()
+                        time.sleep(duration)
+                        self.bottino.stop()
+
+                        self.conn.sendall("ok".encode())
+
+                    else:
+                        self.conn.sendall("error".encode())
+
+
+def comandiComposti(comando, bottino, conn):
+    print("sono nel db!")
+
+    # prendo lista di comandi composti
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+    res = cur.execute(f"SELECT Mov_seq FROM Movements WHERE Shortcut = '{comando}'")
+    moveSeq = res.fetchall()
+    # print(moveSeq[0][0], type(moveSeq))
+    con.close()
+
+    if moveSeq:
+        listaMovimenti = moveSeq[0][0].split(";")
+
+        for elemento in listaMovimenti:
+            print(elemento[0], elemento[1:])  # elemento[0] = direzione, elemento[1:] = durata
+            if elemento[0].lower() == "f":
+                bottino.forward()
+                time.sleep(elemento[1:])
+                bottino.stop()
+
+                conn.sendall("ok".encode())
+
+            elif elemento[0].lower() == "b":
+                bottino.backward()
+                time.sleep(elemento[1:])
+                bottino.stop()
+
+                conn.sendall("ok".encode())
+
+            elif elemento[0].lower() == "l":
+                bottino.left()
+                time.sleep(elemento[1:])
+                bottino.stop()
+
+                conn.sendall("ok".encode())
+
+            elif elemento[0].lower() == "r":
+                bottino.right()
+                time.sleep(elemento[1:])
+                bottino.stop()
+
+                conn.sendall("ok".encode())
+
+    else:
+        print("cueri vuota")
 
 
 def main():
     s = sck.socket(sck.AF_INET, sck.SOCK_STREAM)
-    my_address = ("0.0.0.0", 3464)
+    my_address = ("0.0.0.0", 3465)
     s.bind(my_address)
 
     s.listen()
-    conn, address = s.accept()
-    bottino = AlphaBot.AlphaBot()
-
-    client = ClientThread(conn, address, bottino)
-    statoSensori = InvioContinuo(conn, address, bottino)
-
     while True:
+        conn, address = s.accept()
+        bottino = AlphaBot.AlphaBot()
+
+        client = ClientThread(conn, address, bottino)
+        statoSensori = InvioContinuo(conn, address, bottino)
+
         client.start()
         statoSensori.start()
 
