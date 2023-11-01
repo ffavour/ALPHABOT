@@ -16,7 +16,7 @@ class InvioContinuo(threading.Thread):
         self.bottino = bottino
 
     def run(self):
-        obst = "OB_N"
+        obst = "OB_N"   # ostacolo nullo = no ostacoli
         while True:
             sens = self.bottino.get_sensors()
 
@@ -47,13 +47,14 @@ class ClientThread(threading.Thread):
 
             dataStr = data.decode()
 
-            # prendo lista di scorciatoie da db
+            # prende lista di scorciatoie da db
             con = sqlite3.connect("database.db")
             cur = con.cursor()
             res = cur.execute(f"SELECT Shortcut FROM Movements")
             Shortcut = res.fetchall()
             con.close()
 
+            # crea liste con tutte le scorciatoie
             listaShortcut = []
             for i in range(len(Shortcut)):
                 listaShortcut.append(Shortcut[i][0])
@@ -62,11 +63,14 @@ class ClientThread(threading.Thread):
             print(str(dataStr[0]).upper())
             comandoCercatoDB = str(dataStr[0]).upper()
 
+            # controlla se comando si trova nella lista
             if comandoCercatoDB in listaShortcut:
                 print("dentro if")
+                # esegue comandi composti
                 comandiComposti(comandoCercatoDB, self.bottino, self.conn)
                 print("dopo funz")
 
+            # esegue comandi di default (f, b, l, r)
             else:
                 comand = dataStr.split(SEPARATOR)
                 comando = comand[0]
@@ -125,10 +129,13 @@ def comandiComposti(comando, bottino, conn):
     # print(moveSeq[0][0], type(moveSeq))
     con.close()
 
+    # in teoria questo controllo è inutile
     if moveSeq:
+        # crea lista dal risultato della query con tutti i comandi composti (esempio lista: [F10, L1, B6])
         listaMovimenti = moveSeq[0][0].split(";")
 
         for elemento in listaMovimenti:
+            # esegue i comandi elemento per elemento
             print(elemento[0], elemento[1:])  # elemento[0] = direzione, elemento[1:] = durata
             comando = str(elemento[0]).lower()
             duration = int(elemento[1:])
