@@ -60,9 +60,11 @@ class ClientThread(threading.Thread):
 
             print("fuori if")
             print(str(dataStr[0]).upper())
-            if str(dataStr[0]).upper() in listaShortcut:
+            comandoCercatoDB = str(dataStr[0]).upper()
+
+            if comandoCercatoDB in listaShortcut:
                 print("dentro if")
-                comandiComposti(dataStr[0].upper(), self.bottino, self.conn)
+                comandiComposti(comandoCercatoDB, self.bottino, self.conn)
                 print("dopo funz")
 
             else:
@@ -128,30 +130,33 @@ def comandiComposti(comando, bottino, conn):
 
         for elemento in listaMovimenti:
             print(elemento[0], elemento[1:])  # elemento[0] = direzione, elemento[1:] = durata
-            if elemento[0].lower() == "f":
+            comando = str(elemento[0]).lower()
+            duration = int(elemento[1:])
+
+            if comando == "f":
                 bottino.forward()
                 time.sleep(elemento[1:])
                 bottino.stop()
 
                 conn.sendall("ok".encode())
 
-            elif elemento[0].lower() == "b":
+            elif comando == "b":
                 bottino.backward()
-                time.sleep(elemento[1:])
+                time.sleep(duration)
                 bottino.stop()
 
                 conn.sendall("ok".encode())
 
-            elif elemento[0].lower() == "l":
+            elif comando == "l":
                 bottino.left()
-                time.sleep(elemento[1:])
+                time.sleep(duration)
                 bottino.stop()
 
                 conn.sendall("ok".encode())
 
-            elif elemento[0].lower() == "r":
+            elif comando == "r":
                 bottino.right()
-                time.sleep(elemento[1:])
+                time.sleep(duration)
                 bottino.stop()
 
                 conn.sendall("ok".encode())
