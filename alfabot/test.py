@@ -14,12 +14,12 @@ def main():
     con.close()
 
     # prendo lista di scorciatoie
-    con = sqlite3.connect("database.db")
-    cur = con.cursor()
+    conoGelato = sqlite3.connect("database.db")
+    cur = conoGelato.cursor()
     res = cur.execute(f"SELECT Shortcut FROM Movements")
     Shortcut = res.fetchall()
     # print(Shortcut, type(Shortcut))
-    con.close()
+    conoGelato.close()
 
     listaSc = []
     for i in range(len(Shortcut)):

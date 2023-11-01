@@ -16,7 +16,7 @@ class InvioContinuo(threading.Thread):
         self.bottino = bottino
 
     def run(self):
-        obst = "OB_N"   # ostacolo nullo = no ostacoli
+        obst = "OB_N"  # ostacolo nullo = no ostacoli
         while True:
             sens = self.bottino.get_sensors()
 
@@ -80,42 +80,42 @@ class ClientThread(threading.Thread):
                     print("fine")
                     self.conn.sendall("-1".encode())
                     break
-
-                elif duration <= 0:
-                    self.conn.sendall("error".encode())
-
                 else:
+                    comandiDefault(comando, duration, self.bottino, self.conn)
 
-                    if comando.lower() == "f":
-                        self.bottino.forward()
-                        time.sleep(duration)
-                        self.bottino.stop()
 
-                        self.conn.sendall("ok".encode())
+def comandiDefault(comando, duration, bottino, conn):
+    if duration <= 0:
+        conn.sendall("error".encode())
+    elif comando == "f":
+        bottino.forward()
+        time.sleep(duration)
+        bottino.stop()
 
-                    elif comando.lower() == "b":
-                        self.bottino.backward()
-                        time.sleep(duration)
-                        self.bottino.stop()
+        conn.sendall("ok".encode())
 
-                        self.conn.sendall("ok".encode())
+    elif comando == "b":
+        bottino.backward()
+        time.sleep(duration)
+        bottino.stop()
 
-                    elif comando.lower() == "l":
-                        self.bottino.left()
-                        time.sleep(duration)
-                        self.bottino.stop()
+        conn.sendall("ok".encode())
 
-                        self.conn.sendall("ok".encode())
+    elif comando == "l":
+        bottino.left()
+        time.sleep(duration)
+        bottino.stop()
 
-                    elif comando.lower() == "r":
-                        self.bottino.right()
-                        time.sleep(duration)
-                        self.bottino.stop()
+        conn.sendall("ok".encode())
 
-                        self.conn.sendall("ok".encode())
+    elif comando == "r":
+        bottino.right()
+        time.sleep(duration)
+        bottino.stop()
 
-                    else:
-                        self.conn.sendall("error".encode())
+        conn.sendall("ok".encode())
+    else:
+        conn.sendall("error".encode())
 
 
 def comandiComposti(comando, bottino, conn):
@@ -139,34 +139,7 @@ def comandiComposti(comando, bottino, conn):
             print(elemento[0], elemento[1:])  # elemento[0] = direzione, elemento[1:] = durata
             comando = str(elemento[0]).lower()
             duration = int(elemento[1:])
-
-            if comando == "f":
-                bottino.forward()
-                time.sleep(elemento[1:])
-                bottino.stop()
-
-                conn.sendall("ok".encode())
-
-            elif comando == "b":
-                bottino.backward()
-                time.sleep(duration)
-                bottino.stop()
-
-                conn.sendall("ok".encode())
-
-            elif comando == "l":
-                bottino.left()
-                time.sleep(duration)
-                bottino.stop()
-
-                conn.sendall("ok".encode())
-
-            elif comando == "r":
-                bottino.right()
-                time.sleep(duration)
-                bottino.stop()
-
-                conn.sendall("ok".encode())
+            comandiDefault(comando, duration, bottino, conn)
 
     else:
         print("cueri vuota")
