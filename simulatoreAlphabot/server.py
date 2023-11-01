@@ -23,25 +23,32 @@ def comandiComposti(comando, bottino, conn):
             duration = int(elemento[1:])
 
             print(comando, duration, type(comando), type(duration))
-
-            if comando == "f":
-                bottino.forward(duration)
-                conn.sendall("ok".encode())
-
-            elif comando == "b":
-                bottino.backward(duration)
-                conn.sendall("ok".encode())
-
-            elif comando == "l":
-                bottino.left(duration)
-                conn.sendall("ok".encode())
-
-            elif comando == "r":
-                bottino.right(duration)
-                conn.sendall("ok".encode())
-
+            comandiDefault(comando, duration, bottino, conn)
     else:
         print("cueri vuota")
+
+
+def comandiDefault(comando, duration, t, conn):
+    if duration <= 0:
+        conn.sendall("error".encode())
+    else:
+
+        if comando == "f":
+            t.forward(duration)
+            conn.sendall("ok".encode())
+        elif comando == "b":
+            t.backward(duration)
+            conn.sendall("ok".encode())
+        elif comando == "l":
+            t.left(duration)
+            conn.sendall("ok".encode())
+
+        elif comando == "r":
+            t.right(duration)
+            conn.sendall("ok".encode())
+
+        else:
+            conn.sendall("error".encode())
 
 
 def main():
@@ -88,28 +95,8 @@ def main():
                 print("fine")
                 conn.sendall("-1".encode())
                 break
-
-            elif duration <= 0:
-                conn.sendall("error".encode())
             else:
-
-                if comando == "f":
-                    t.forward(duration)
-                    conn.sendall("ok".encode())
-                elif comando == "b":
-                    t.backward(duration)
-                    conn.sendall("ok".encode())
-                elif comando == "l":
-                    t.left(duration)
-                    conn.sendall("ok".encode())
-
-                elif comando == "r":
-                    t.right(duration)
-                    conn.sendall("ok".encode())
-
-                else:
-                    conn.sendall("error".encode())
-
+                comandiDefault(comando, duration, t, conn)
         print("uscito")
 
     conn.close()
