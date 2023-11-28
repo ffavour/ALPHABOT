@@ -65,10 +65,10 @@ class ClientThread(threading.Thread):
 
             # controlla se comando si trova nella lista
             if comandoCercatoDB in listaShortcut:
-                print("dentro if")
+                # print("dentro if")
                 # esegue comandi composti
                 comandiComposti(comandoCercatoDB, self.bottino, self.conn)
-                print("dopo funz")
+                # print("dopo funz")
 
             # esegue comandi di default (f, b, l, r)
             else:
@@ -119,7 +119,7 @@ def comandiDefault(comando, duration, bottino, conn):
 
 
 def comandiComposti(comando, bottino, conn):
-    print("sono nel db!")
+    # print("sono nel db!")
 
     # prendo lista di comandi composti
     con = sqlite3.connect("database.db")
