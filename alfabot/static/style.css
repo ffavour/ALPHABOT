@@ -1,8 +1,10 @@
 body{
-    background-color: bisque;
+    background-color: rgba(246, 221, 190, 0.9);
     font-family: "Roboto",sans-serif;
     font-weight: lighter;
     text-align: center;
+    margin: 0;
+    color: #6c3d0b;
 }
 
 .button{
@@ -10,6 +12,9 @@ body{
     padding: 0.625em;
     border-radius: 0.5em;
     cursor: pointer;
+    background-color: #FFD8A9;
+    font-family: "Carlito", "sans-serif";
+    color: #bd690c;
 }
 
 .button:hover{
@@ -26,9 +31,51 @@ body{
     font-size: 0.9em;
     flex-grow: 1;
     border-radius: 0.5em;
+    color: #E38B29;
+}
+
+.input::placeholder{
+    color: #E38B29;
 }
 
 .input[type="text"], .chat-input[type="text"]:focus {
     border: none;
     outline-width: 0;
+    color: #E38B29;
 }
+
+.sezioneBottoni{
+    margin-top: 6.5em;
+    text-align: center;
+    background-color: #F1A661;
+    height: 25em;
+    padding: 1em;
+
+    border-radius: 0.625em;
+    margin-right: 10em;
+    margin-left: 10em;
+}
+
+.contenitoreBottoni{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    margin-bottom: 5em;
+}
+
+
+@media (max-width: 600px) {
+            .button {
+                width: 80px;
+                height: 30px;
+            }
+
+            .sezioneBottoni{
+                margin-right: 1em;
+                margin-left: 1em;
+                height: 20em;
+                margin-top: 7em;
+            }
+        }
