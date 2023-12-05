@@ -49,7 +49,7 @@ def comandiComposti(comando):
         for elemento in listaMovimenti:
             # esegue i comandi elemento per elemento
             print(elemento[0], elemento[1:])  # elemento[0] = direzione, elemento[1:] = durata
-            comandiDefault(elemento[0], elemento[1:])
+            comandiDefault(elemento[0], int(elemento[1:]))
     else:
         print("ERROR")
 
@@ -67,9 +67,9 @@ def index():
             comandiComposti(comandoDaCercareDB)
 
     elif request.method == 'GET':
-        return render_template('index.html')
+        return render_template('login.html')
 
-    return render_template("index.html")
+    return render_template("login.html")
 
 
 if __name__ == '__main__':
