@@ -8,23 +8,19 @@
   <title>Login</title>
 </head>
 <body>
-    <h3>LOGIN</h3>
   <div class="sezioneBottoni">
-    <div class="contenitoreLogin">
-
-    <h3>Nome Utente:</h3>
-    <form method="post" action="/">
-      <input class="input" type="text" id="fComando" name="inputBox" autocomplete="off" placeholder="Inserire utente...">
-      <input style="display: none" class="button" type="submit" value="Invia"/>
-     </form><br>
-    <h3>Password:</h3>
-     <form method="post" action="/">
-       <input class="input" type="text" id="fPassword" name="inputBox" autocomplete="off" placeholder="Inserire password...">
-       <input style="display: none" class="button" type="submit" value="Invia"/>
+      <h1>Login</h1>
+      <br>
+      <form action="" method="post">
+        <input class="input" type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}">
+         <input class="input" type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+        <input class="button" type="submit" value="Login">
       </form>
-
-        <input class="button" type="submit" value="ENTRA" name="entra"/>
-      </div>
-  </div>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+    </div>
 </body>
 </html>

@@ -64,14 +64,6 @@ body{
     gap: 0.5em;
     margin-bottom: 5em;
 }
-.contenitoreLogin{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5em;
-    margin-bottom: 5em;
-}
 
 
 @media (max-width: 600px) {

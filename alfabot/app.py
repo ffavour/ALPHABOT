@@ -1,12 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import time
 import AlphaBot
+import string
+import random
 
 app = Flask(__name__)
 
-
 bottino = AlphaBot.AlphaBot()
+
+
+def generaStringaRandom(lunghezza=40):
+    caratteri = string.ascii_letters + string.digits  # lettere e numeri
+    stringa_alfanumerica = ''.join(random.choice(caratteri) for _ in range(lunghezza))
+    return stringa_alfanumerica
 
 
 def comandiDefault(comando=None, duration=2):
@@ -54,7 +61,28 @@ def comandiComposti(comando):
         print("ERROR")
 
 
-@app.route("/", methods=['GET', 'POST'])
+def check_password(hashed_password, user_password):
+    return hashed_password == user_password
+
+
+def validate(username, password):
+    completion = False
+    con = sqlite3.connect('password.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM Users")
+    rows = cur.fetchall()
+    for row in rows:
+        dbUser = row[0]
+        dbPass = row[1]
+        if dbUser == username:
+            completion = check_password(dbPass, password)
+    return completion
+
+
+token = generaStringaRandom()
+
+
+@app.route(f"/{token}", methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         comandiDefault()
@@ -67,9 +95,24 @@ def index():
             comandiComposti(comandoDaCercareDB)
 
     elif request.method == 'GET':
-        return render_template('login.html')
+        return render_template('index.html')
 
-    return render_template("login.html")
+    return render_template("index.html")
+
+
+@app.route("/", methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        print(username, password)
+        completion = validate(username, password)
+        if not completion:
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            return redirect(url_for('index'))
+    return render_template('login.html', error=error)
 
 
 if __name__ == '__main__':
