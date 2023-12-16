@@ -8,16 +8,18 @@
   <title>Login</title>
 </head>
 <body>
-  <div class="sezioneBottoni">
+  <div class="contenitoreLogin">
       <h1>Login</h1>
       <br>
-      <form action="" method="post">
-        <input class="input" type="text" placeholder="Username" name="username" value="{{
+      <div class="formLogin">
+      <form action="/" method="post">
+        <input class="input" type="text" autocomplete="off" placeholder="Username" name="username" value="{{
           request.form.username }}">
-         <input class="input" type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}">
-        <input class="button" type="submit" value="Login">
+         <input class="input passwordInpt" type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}"><br>
+        <input class="button loginBtn" type="submit" value="Login">
       </form>
+       </div>
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
       {% endif %}

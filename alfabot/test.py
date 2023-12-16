@@ -1,10 +1,11 @@
-import random
-import string
+import sqlite3
 
+username = "gino"
+password = "12345678"
 
-def genera_stringa_alfanumerica(lunghezza=40):
-    caratteri = string.ascii_letters + string.digits  # lettere e numeri
-    stringa_alfanumerica = ''.join(random.choice(caratteri) for _ in range(lunghezza))
-    return stringa_alfanumerica
+con = sqlite3.connect('password.db')
+cur = con.cursor()
+cur.execute(f"SELECT * FROM Users WHERE Utente = '{username}' AND Password = '{password}'")
+rows = cur.fetchall()
 
-
+print(rows)

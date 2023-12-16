@@ -104,14 +104,16 @@ def index():
 def login():
     error = None
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        print(username, password)
-        completion = validate(username, password)
-        if not completion:
-            error = 'Invalid Credentials. Please try again.'
-        else:
-            return redirect(url_for('index'))
+
+        if 'username' in request.form and 'password' in request.form:
+            username = request.form['username']
+            password = request.form['password']
+            print(username, password)
+            completion = validate(username, password)
+            if not completion:
+                error = 'Invalid Credentials. Please try again.'
+            else:
+                return redirect(url_for('index'))
     return render_template('login.html', error=error)
 
 

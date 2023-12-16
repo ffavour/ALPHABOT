@@ -65,6 +65,24 @@ body{
     margin-bottom: 5em;
 }
 
+.contenitoreLogin{
+    display: flex;
+    flex-direction: column;
+    margin-top: 6.5em;
+    background-color: #F1A661;
+    height: 15em;
+    padding: 1em;
+
+    border-radius: 0.625em;
+    margin-right: 10em;
+    margin-left: 10em;
+}
+
+.loginBtn{
+    margin-top: 1em;
+    width: 10em;
+    height: 2.5em;
+}
 
 @media (max-width: 600px) {
             .button {
@@ -72,10 +90,24 @@ body{
                 height: 30px;
             }
 
+            .loginBtn{
+                width: 60px;
+                height: 30px;
+            }
+
+            .passwordInpt{
+                margin-top: 1em;
+            }
+
             .sezioneBottoni{
                 margin-right: 1em;
                 margin-left: 1em;
                 height: 20em;
                 margin-top: 7em;
+            }
+
+            .contenitoreLogin{
+                margin-right: 1em;
+                margin-left: 1em;
             }
         }
