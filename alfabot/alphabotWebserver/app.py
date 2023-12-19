@@ -10,6 +10,7 @@ app = Flask(__name__)
 bottino = AlphaBot.AlphaBot()
 
 
+# genera stringa alfanumerica casuale per il token della pagina utente
 def generaStringaRandom(lunghezza=40):
     caratteri = string.ascii_letters + string.digits  # lettere e numeri
     stringa_alfanumerica = ''.join(random.choice(caratteri) for _ in range(lunghezza))
