@@ -18,6 +18,8 @@ def generaStringaRandom(lunghezza=40):
 
 
 def comandiDefault(comando=None, duration=2):
+    # gestione dei comandi inviati dall'utente [AVANTI, INDIETRO,ecc sono i vari valori dei bottoni,
+    # str(comando).lower() per i comandi composti]
     if request.form.get('avanti') == 'AVANTI' or str(comando).lower() == "f":  # name == value
         print("vado avanti", duration)
         bottino.forward()
@@ -41,13 +43,11 @@ def comandiDefault(comando=None, duration=2):
 
 
 def comandiComposti(comando):
-    # print("sono nel db!")
-    # prendo lista di comandi composti
+    # apertura db
     con = sqlite3.connect("database.db")
     cur = con.cursor()
     res = cur.execute(f"SELECT Mov_seq FROM Movements WHERE Shortcut = '{comando}'")
     moveSeq = res.fetchall()
-    # print(moveSeq[0][0], type(moveSeq))
     con.close()
 
     if moveSeq:
@@ -88,10 +88,10 @@ def index():
     if request.method == 'POST':
         comandiDefault()
 
+        # controlla che la casella per eseguire i comandi sia nella pagina
         if 'inputBox' in request.form:
             input_value = request.form['inputBox']
             print('Valore dell\'input: {}'.format(input_value))
-            # print(format(input_value), type(format(input_value)))
             comandoDaCercareDB = format(input_value)
             comandiComposti(comandoDaCercareDB)
 
@@ -106,10 +106,10 @@ def login():
     error = None
     if request.method == 'POST':
 
+        # controlla che la casella per eseguire i comandi sia nella pagina
         if 'username' in request.form and 'password' in request.form:
             username = request.form['username']
             password = request.form['password']
-            print(username, password)
             completion = validate(username, password)
             if not completion:
                 error = 'Invalid Credentials. Please try again.'
