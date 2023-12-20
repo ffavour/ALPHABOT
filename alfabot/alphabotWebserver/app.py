@@ -4,10 +4,12 @@ import time
 import AlphaBot
 import string
 import random
+import hashlib
 
 app = Flask(__name__)
 
 bottino = AlphaBot.AlphaBot()
+hash_algorithm = hashlib.sha256()
 
 
 # genera stringa alfanumerica casuale per il token della pagina utente
@@ -76,9 +78,21 @@ def validate(username, password):
         dbUser = row[0]
         dbPass = row[1]
         if dbUser == username:
-            completion = check_password(dbPass, password)
+            hash_algorithm = hashlib.sha256()  # Crea una nuova istanza di hash
+            hash_algorithm.update(password.encode('utf-8'))
+            hashed_password = hash_algorithm.hexdigest()
+            completion = check_password(dbPass, hashed_password)
+            print(dbPass, hashed_password)
     return completion
 
+
+
+"""
+Per testare pagina login
+utenti  |  password in chiaro
+gino        12345678
+pinco       palla
+"""
 
 token = generaStringaRandom()
 
