@@ -67,6 +67,8 @@ def comandiComposti(comando):
 def check_password(hashed_password, user_password):
     return hashed_password == user_password
 
+#se il cookie è settato tutto a posto, se non è settato è pronto per settarlo al email e password
+
 
 def validate(username, password):
     completion = False
