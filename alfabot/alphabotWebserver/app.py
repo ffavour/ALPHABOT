@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 import sqlite3
 import time
 import AlphaBot
@@ -67,8 +67,6 @@ def comandiComposti(comando):
 def check_password(hashed_password, user_password):
     return hashed_password == user_password
 
-#se il cookie è settato tutto a posto, se non è settato è pronto per settarlo al email e password
-
 
 def validate(username, password):
     completion = False
@@ -84,9 +82,8 @@ def validate(username, password):
             hash_algorithm.update(password.encode('utf-8'))
             hashed_password = hash_algorithm.hexdigest()
             completion = check_password(dbPass, hashed_password)
-            print(dbPass, hashed_password)
+            # print(dbPass, hashed_password)
     return completion
-
 
 
 """
@@ -103,11 +100,10 @@ token = generaStringaRandom()
 def index():
     if request.method == 'POST':
         comandiDefault()
-
         # controlla che la casella per eseguire i comandi sia nella pagina
         if 'inputBox' in request.form:
             input_value = request.form['inputBox']
-            print('Valore dell\'input: {}'.format(input_value))
+            # print('Valore dell\'input: {}'.format(input_value))
             comandoDaCercareDB = format(input_value)
             comandiComposti(comandoDaCercareDB)
 
@@ -121,7 +117,6 @@ def index():
 def login():
     error = None
     if request.method == 'POST':
-
         # controlla che la casella per eseguire i comandi sia nella pagina
         if 'username' in request.form and 'password' in request.form:
             username = request.form['username']
@@ -130,7 +125,21 @@ def login():
             if not completion:
                 error = 'Invalid Credentials. Please try again.'
             else:
-                return redirect(url_for('index'))
+                if request.cookies.get('cookie'):
+                    cookie = request.cookies.get('cookie')
+                    print(cookie)
+                    if cookie == "gino":
+                        resp = make_response(render_template('index.html'))
+                        resp.set_cookie('cookie', 'gino')
+                        print(cookie)
+                        return resp
+                else:
+                    print("cookie non settato")
+                    resp = make_response(render_template('login_per_sfigati.html'))
+                    resp.set_cookie('cookie', username)
+                    return resp
+
+            return redirect(url_for('index'))
     return render_template('login.html', error=error)
 
 
