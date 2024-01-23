@@ -86,6 +86,18 @@ def validate(username, password):
     return completion
 
 
+def controlloTipoUtente(username):
+    con = sqlite3.connect("password.db")
+    cur = con.cursor()
+    res = cur.execute(f"SELECT Tipo FROM Users WHERE Utente = '{username}'")
+    moveSeq = res.fetchall()
+    con.close()
+
+    tipo = moveSeq[0][0]
+    # print(tipo)
+    return str(tipo)
+
+
 """
 Per testare pagina login
 utenti  |  password in chiaro
@@ -93,13 +105,20 @@ gino        12345678
 pinco       palla
 """
 
-token = generaStringaRandom()
+tokenA = generaStringaRandom()
 
 
-@app.route(f"/{token}", methods=['GET', 'POST'])
-def index():
+# pagina per utente avanzato
+@app.route(f"/{tokenA}", methods=['GET', 'POST'])
+def indexA():
+    # legge il cookie
     if request.method == 'POST':
+
+        # legge cookie
+        cookieUsername = request.cookies.get('username')
+        print(cookieUsername)
         comandiDefault()
+
         # controlla che la casella per eseguire i comandi sia nella pagina
         if 'inputBox' in request.form:
             input_value = request.form['inputBox']
@@ -107,10 +126,38 @@ def index():
             comandoDaCercareDB = format(input_value)
             comandiComposti(comandoDaCercareDB)
 
+        # resetta il cookie
+        resp = make_response(redirect(url_for('indexA')))
+        resp.set_cookie('cookie', cookieUsername)
+
     elif request.method == 'GET':
         return render_template('index.html')
 
     return render_template("index.html")
+
+
+tokenP = generaStringaRandom()
+
+
+# pagina per utente Principiante
+@app.route(f"/{tokenP}", methods=['GET', 'POST'])
+def indexP():
+    # legge il cookie
+    if request.method == 'POST':
+
+        # legge cookie
+        cookieUsername = request.cookies.get('username')
+        print(cookieUsername)
+        comandiDefault()
+
+        # resetta il cookie
+        resp = make_response(redirect(url_for('indexP')))
+        resp.set_cookie('cookie', cookieUsername)
+
+    elif request.method == 'GET':
+        return render_template('login_per_sfigati.html')
+
+    return render_template("login_per_sfigati.html")
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -125,22 +172,24 @@ def login():
             if not completion:
                 error = 'Invalid Credentials. Please try again.'
             else:
-                if request.cookies.get('cookie'):
-                    cookie = request.cookies.get('cookie')
+                cookie = username
+
+                tipoUtente = controlloTipoUtente(username)
+                print(tipoUtente)
+                if tipoUtente == "A":
+                    print("utente avanzato")
+                    resp = make_response(redirect(url_for('indexA')))
+                    resp.set_cookie('cookie', username)
                     print(cookie)
-                    if cookie == "gino":
-                        resp = make_response(render_template('index.html'))
-                        resp.set_cookie('cookie', 'gino')
-                        print(cookie)
-                        return resp
-                    else:
-                        print("cookie per sfigati")
-                        resp = make_response(render_template('login_per_sfigati.html'))
-                        resp.set_cookie('cookie', 'pinco')
-                
+                    return resp
+                elif tipoUtente == "P":
+                    print("utente plebeo")
+                    resp = make_response(redirect(url_for('indexP')))
+                    resp.set_cookie('cookie', username)
+                    print(cookie)
                     return resp
 
-            return redirect(url_for('index'))
+            # return redirect(url_for('index'))
     return render_template('login.html', error=error)
 
 
