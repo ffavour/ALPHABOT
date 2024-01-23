@@ -133,10 +133,11 @@ def login():
                         resp.set_cookie('cookie', 'gino')
                         print(cookie)
                         return resp
-                else:
-                    print("cookie non settato")
-                    resp = make_response(render_template('login_per_sfigati.html'))
-                    resp.set_cookie('cookie', username)
+                    else:
+                        print("cookie per sfigati")
+                        resp = make_response(render_template('login_per_sfigati.html'))
+                        resp.set_cookie('cookie', 'pinco')
+                
                     return resp
 
             return redirect(url_for('index'))
